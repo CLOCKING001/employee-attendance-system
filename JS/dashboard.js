@@ -513,66 +513,46 @@ const cancelEditBtn = document.getElementById("cancelEditBtn");
 
 // OPEN EDIT PROFILE FORM
 
+if (editProfileBtn && editProfileForm) {
+
 editProfileBtn.addEventListener("click", function() {
-
-    document.getElementById("editName").value =
-        employeeProfile.fullName;
-
-    document.getElementById("editID").value =
-        employeeProfile.employeeID;
-
-    document.getElementById("editDepartment").value =
-        employeeProfile.department;
-
-    document.getElementById("editPosition").value =
-        employeeProfile.position;
-
-    document.getElementById("editEmail").value =
-        employeeProfile.email;
-
+    document.getElementById("editName").value = employeeProfile.fullName;
+    document.getElementById("editID").value = employeeProfile.employeeID;
+    document.getElementById("editDepartment").value = employeeProfile.department;
+    document.getElementById("editPosition").value = employeeProfile.position;
+    document.getElementById("editEmail").value = employeeProfile.email;
     editProfileForm.style.display = "block";
-
 });
+
+}
 
 // SAVE EMPLOYEE INFORMATION
 
+if (employeeEditForm) {
+
 employeeEditForm.addEventListener("submit", function(event) {
-
     event.preventDefault();
-
-    employeeProfile.fullName =
-        document.getElementById("editName").value;
-
-    employeeProfile.department =
-        document.getElementById("editDepartment").value;
-
-    employeeProfile.position =
-        document.getElementById("editPosition").value;
-
-    employeeProfile.email =
-        document.getElementById("editEmail").value;
-
-    localStorage.setItem(
-        "employeeProfile",
-        JSON.stringify(employeeProfile)
-    );
-
+    employeeProfile.fullName = document.getElementById("editName").value;
+    employeeProfile.department = document.getElementById("editDepartment").value;
+    employeeProfile.position = document.getElementById("editPosition").value;
+    employeeProfile.email = document.getElementById("editEmail").value;
+    localStorage.setItem("employeeProfile", JSON.stringify(employeeProfile));
     updateEmployeeProfile();
-
     editProfileForm.style.display = "none";
-
     alert("Employee profile updated successfully!");
-
 });
+
+}
 
 // CANCEL EDITING
 
+if (cancelEditBtn && editProfileForm) {
+
 cancelEditBtn.addEventListener("click", function() {
-
     editProfileForm.style.display = "none";
-
 });
 
+}
 // ADMINISTRATOR EMPLOYEE MANAGEMENT
 
 let employees = JSON.parse(
