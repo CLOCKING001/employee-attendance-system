@@ -297,11 +297,13 @@ clockOutBtn.addEventListener("click", async function () {
 
 });
 
+
 // CLOSE CLOCK OUT CONDITION
 }
 
 // INITIALIZE
 updateAttendanceStatus();
+
 displayAttendanceHistory();
 // ATTENDANCE HISTORY
 
