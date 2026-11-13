@@ -214,33 +214,85 @@ clockInBtn.addEventListener("click", async function () {
 
 });
 
-// CLOCK OUT
+// CLOCK OUT - UPDATE SUPABASE
 
-clockOutBtn.addEventListener("click", function () {
+clockOutBtn.addEventListener("click", async function () {
 
-if (!clockInTime) return;
-verifyOfficeLocation().then((isVerified) => {
+    if (!clockInTime) {
+        alert("You must clock in first.");
+        return;
+    }
+
+    const isVerified = await verifyOfficeLocation();
+
     if (!isVerified) return;
-    const clockOutTime = new Date();
+
+    if (!verifiedLocation) {
+        alert("Unable to retrieve verified location.");
+        return;
+    }
+
+    const recordId = localStorage.getItem("attendanceRecordId");
+
+    if (!recordId) {
+        alert("Attendance record not found. Please contact your administrator.");
+        return;
+    }
+
+    const now = new Date();
     const savedClockIn = new Date(clockInTime);
-    saveAttendanceHistory(savedClockIn, clockOutTime);
-    localStorage.setItem("clockOutTime", clockOutTime.toISOString());
-    const duration = clockOutTime - savedClockIn;
+    const duration = now - savedClockIn;
+
     const hours = Math.floor(duration / 3600000);
     const minutes = Math.floor((duration % 3600000) / 60000);
+
+    const totalHours = duration / 3600000;
+
+    const { data: userData, error: userError } =
+        await supabaseClient.auth.getUser();
+
+    if (userError || !userData.user) {
+        alert("Please sign in again.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("attendance")
+        .update({
+            clock_out: now.toISOString(),
+            clock_out_latitude: verifiedLocation.latitude,
+            clock_out_longitude: verifiedLocation.longitude,
+            total_hours: totalHours
+        })
+        .eq("id", recordId)
+        .eq("user_id", userData.user.id);
+
+    if (error) {
+        alert("Clock-out failed: " + error.message);
+        return;
+    }
+
+    saveAttendanceHistory(savedClockIn, now);
+
+    localStorage.setItem("clockOutTime", now.toISOString());
+
     alert(
         "Clock-out successful!\nTotal time: " +
         hours + " hours " + minutes + " minutes"
     );
+
     document.getElementById("totalWorkTime").textContent =
         hours + " hours " + minutes + " minutes";
+
     localStorage.removeItem("clockInTime");
+    localStorage.removeItem("attendanceRecordId");
+
     clockInTime = null;
+
     updateAttendanceStatus();
-});
 
 });
-
 // INITIALIZE
 updateAttendanceStatus();
 displayAttendanceHistory();
