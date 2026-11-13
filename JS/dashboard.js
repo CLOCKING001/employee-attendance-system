@@ -8,6 +8,8 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
+// VERIFIED EMPLOYEE LOCATION
+let verifiedLocation = null;
 // LIVE DATE AND TIME
 function updateDateTime() {
     const now = new Date();
