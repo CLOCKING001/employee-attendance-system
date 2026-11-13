@@ -104,6 +104,10 @@ function verifyOfficeLocation() {
 
                 const employeeLatitude = position.coords.latitude;
                 const employeeLongitude = position.coords.longitude;
+                verifiedLocation = {
+    latitude: employeeLatitude,
+    longitude: employeeLongitude
+};
                 console.log("Your Latitude:", employeeLatitude);
 console.log("Your Longitude:", employeeLongitude);
 console.log("GPS Accuracy:", position.coords.accuracy, "metres");
