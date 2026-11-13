@@ -45,7 +45,7 @@ const clockOutBtn = document.getElementById("clockOutBtn");
 const attendanceStatus = document.getElementById("attendanceStatus");
 
 // Retrieve saved attendance
-let clockInTime = localStorage.getItem(“clockInTime”);
+let clockInTime = localStorage.getItem("clockInTime");
 
 function updateAttendanceStatus() {
 
