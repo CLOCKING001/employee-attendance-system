@@ -580,6 +580,8 @@ addEmployeeBtn.addEventListener("click", function() {
 
 function displayEmployees() {
 
+    if (!employeeDirectory) return;
+
     employeeDirectory.innerHTML = "";
 
     if (employees.length === 0) {
