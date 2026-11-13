@@ -816,3 +816,40 @@ newEmployeeForm.addEventListener("submit", function(event) {
 // INITIALIZE EMPLOYEE DIRECTORY
 
 displayEmployees();
+// SUPABASE EMPLOYEE LOGIN
+
+const loginForm = document.getElementById("loginForm");
+
+if (loginForm) {
+
+    loginForm.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+        if (error) {
+
+            alert("Login failed: " + error.message);
+
+            return;
+
+        }
+
+        alert("Login successful! Welcome.");
+
+        window.location.href = "dashboard.html";
+
+    });
+
+}
