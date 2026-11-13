@@ -48,6 +48,7 @@ const attendanceStatus = document.getElementById("attendanceStatus");
 let clockInTime = localStorage.getItem("clockInTime");
 
 function updateAttendanceStatus() {
+    if (!clockInBtn || !clockOutBtn) return;
     if (clockInTime) {
         clockInBtn.disabled = true;
         clockOutBtn.disabled = false;
