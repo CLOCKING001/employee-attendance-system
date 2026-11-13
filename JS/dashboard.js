@@ -1,3 +1,13 @@
+// SUPABASE CONNECTION
+
+const SUPABASE_URL = "https://bqiqqagwmultojblbisj.supabase.co/rest/v1/";
+
+const SUPABASE_KEY = "sb_publishable_NIVEtutArzz7fh95viwTfg_Es4nzhy4";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 // LIVE DATE AND TIME
 function updateDateTime() {
     const now = new Date();
