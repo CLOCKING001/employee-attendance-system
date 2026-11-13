@@ -157,23 +157,60 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 }
 
 
-// CLOCK IN
+// CLOCK IN - SAVE TO SUPABASE
 
-clockInBtn.addEventListener("click", function () {
+clockInBtn.addEventListener("click", async function () {
 
-    verifyOfficeLocation().then((isVerified) => {
+    const isVerified = await verifyOfficeLocation();
 
-        if (!isVerified) return;
+    if (!isVerified) return;
 
-        clockInTime = new Date().toISOString();
+    if (!verifiedLocation) {
+        alert("Unable to retrieve verified location.");
+        return;
+    }
 
-        localStorage.setItem("clockInTime", clockInTime);
+    const { data: userData, error: userError } =
+        await supabaseClient.auth.getUser();
 
-        updateAttendanceStatus();
+    if (userError || !userData.user) {
+        alert("Please sign in again.");
+        window.location.href = "index.html";
+        return;
+    }
 
-        alert("Clock-in successful!");
+    const now = new Date();
 
-    });
+    const attendanceDate =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0");
+
+    const { data, error } = await supabaseClient
+        .from("attendance")
+        .insert({
+            user_id: userData.user.id,
+            clock_in: now.toISOString(),
+            clock_in_latitude: verifiedLocation.latitude,
+            clock_in_longitude: verifiedLocation.longitude,
+            attendance_date: attendanceDate
+        })
+        .select()
+        .single();
+
+    if (error) {
+        alert("Clock-in failed: " + error.message);
+        return;
+    }
+
+    clockInTime = now.toISOString();
+
+    localStorage.setItem("clockInTime", clockInTime);
+    localStorage.setItem("attendanceRecordId", data.id);
+
+    updateAttendanceStatus();
+
+    alert("Clock-in successful! Your attendance has been saved.");
 
 });
 
