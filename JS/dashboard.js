@@ -1,6 +1,6 @@
 // SUPABASE CONNECTION
 
-const SUPABASE_URL = "https://bqiqqagwmultojblbisj.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://bqiqqagwmultojblbisj.supabase.co";
 
 const SUPABASE_KEY = "sb_publishable_NIVEtutArzz7fh95viwTfg_Es4nzhy4";
 
