@@ -398,16 +398,21 @@ let employeeProfile = JSON.parse(
 
 function updateEmployeeProfile() {
 
-document.getElementById("employeeName").textContent =
-    employeeProfile.fullName;
-document.getElementById("employeeID").textContent =
-    employeeProfile.employeeID;
-document.getElementById("employeeDepartment").textContent =
-    employeeProfile.department;
-document.getElementById("employeePosition").textContent =
-    employeeProfile.position;
-document.getElementById("employeeEmail").textContent =
-    employeeProfile.email;
+    const name = document.getElementById("employeeName");
+    const id = document.getElementById("employeeID");
+    const department = document.getElementById("employeeDepartment");
+    const position = document.getElementById("employeePosition");
+    const email = document.getElementById("employeeEmail");
+
+    if (name) name.textContent = employeeProfile.fullName;
+
+    if (id) id.textContent = employeeProfile.employeeID;
+
+    if (department) department.textContent = employeeProfile.department;
+
+    if (position) position.textContent = employeeProfile.position;
+
+    if (email) email.textContent = employeeProfile.email;
 
 }
 
