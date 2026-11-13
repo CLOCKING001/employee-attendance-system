@@ -216,6 +216,7 @@ clockInBtn.addEventListener("click", async function () {
 }
 
 // CLOCK OUT - UPDATE SUPABASE
+if (clockOutBtn) {
 
 clockOutBtn.addEventListener("click", async function () {
 
