@@ -45,28 +45,25 @@ const clockOutBtn = document.getElementById("clockOutBtn");
 const attendanceStatus = document.getElementById("attendanceStatus");
 
 // Retrieve saved attendance
-let clockInTime = localStorage.getItem("clockInTime");
+let clockInTime = localStorage.getItem(“clockInTime”);
+
+function updateAttendanceStatus() {
 
 if (!clockInBtn || !clockOutBtn || !attendanceStatus) {
     console.log("Attendance elements not found on this page.");
     return;
 }
-
 if (clockInTime) {
-
     clockInBtn.disabled = true;
     clockOutBtn.disabled = false;
-
     attendanceStatus.textContent =
         "You clocked in at " + new Date(clockInTime).toLocaleTimeString();
-
 } else {
-
     clockInBtn.disabled = false;
     clockOutBtn.disabled = true;
-
     attendanceStatus.textContent =
         "You haven't clocked in today.";
+}
 
 }
 // OFFICE GPS CONFIGURATION
