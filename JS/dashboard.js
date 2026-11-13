@@ -159,7 +159,8 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 
 // CLOCK IN - SAVE TO SUPABASE
 
-clockInBtn.addEventListener("click", async function () {
+if (clockInBtn) {
+    clockInBtn.addEventListener("click", async function () {
 
     const isVerified = await verifyOfficeLocation();
 
