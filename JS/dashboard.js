@@ -158,7 +158,7 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 
 
 // CLOCK IN - SAVE TO SUPABASE
-
+if (clockInBtn) {
 clockInBtn.addEventListener("click", async function () {
 
     const isVerified = await verifyOfficeLocation();
@@ -213,6 +213,7 @@ clockInBtn.addEventListener("click", async function () {
     alert("Clock-in successful! Your attendance has been saved.");
 
 });
+}
 
 // CLOCK OUT - UPDATE SUPABASE
 
