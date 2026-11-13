@@ -646,55 +646,9 @@ function displayEmployees() {
 }
 // EMPLOYEE DIRECTORY ACTIONS
 
+if (employeeDirectory) {
+
 employeeDirectory.addEventListener("click", function(event) {
-
-    const button = event.target;
-
-    const action = button.dataset.action;
-    const index = Number(button.dataset.index);
-
-    if (!action || !employees[index]) {
-        return;
-    }
-
-    const employee = employees[index];
-
-    // EDIT EMPLOYEE
-
-    if (action === "edit") {
-
-        const newName = prompt("Enter employee full name:", employee.fullName);
-
-        if (newName === null) return;
-
-        const newID = prompt("Enter employee ID:", employee.employeeID);
-
-        if (newID === null) return;
-
-        const newDepartment = prompt("Enter department:", employee.department);
-
-        if (newDepartment === null) return;
-
-        const newPosition = prompt("Enter job position:", employee.position);
-
-        if (newPosition === null) return;
-
-        const newEmail = prompt("Enter email address:", employee.email);
-
-        if (newEmail === null) return;
-
-        if (!newName.trim() || !newID.trim() ||
-            !newDepartment.trim() || !newPosition.trim() ||
-            !newEmail.trim()) {
-
-            alert("All employee fields are required.");
-            return;
-        }
-
-        const duplicateID = employees.some(function(item, i) {
-            return i !== index &&
-                item.employeeID.toLowerCase() === newID.trim().toLowerCase();
-        });
 
         if (duplicateID) {
             alert("This Employee ID already exists.");
@@ -737,6 +691,7 @@ alert("Employee information updated successfully!");
 }
 
 });
+}
         // ADMIN ATTENDANCE MONITORING
 
 const attendanceEmployeeFilter =
