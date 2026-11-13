@@ -800,17 +800,21 @@ function displayAdminAttendance() {
     });
 }
 // ATTENDANCE MONITORING BUTTON
-viewAttendanceBtn.addEventListener("click", function() {
-    displayAdminAttendance();
-});
+if (viewAttendanceBtn) {
+    viewAttendanceBtn.addEventListener("click", function() {
+        displayAdminAttendance();
+    });
+}
+
 // INITIALIZE ATTENDANCE MONITORING
-loadAttendanceEmployeeFilter();
-displayAdminAttendance();
+if (adminAttendanceDirectory) {
+    loadAttendanceEmployeeFilter();
+    displayAdminAttendance();
+}
 
 // REGISTER NEW EMPLOYEE
-
-newEmployeeForm.addEventListener("submit", function(event) {
-
+if (newEmployeeForm) {
+    newEmployeeForm.addEventListener("submit", function(event) {
     event.preventDefault();
 
     const newEmployee = {
