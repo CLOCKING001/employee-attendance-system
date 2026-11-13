@@ -159,7 +159,6 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 
 // CLOCK IN - SAVE TO SUPABASE
 
-if (clockInBtn) {
    if (clockInBtn) {
     clockInBtn.addEventListener("click", async function () {
 
