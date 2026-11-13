@@ -296,6 +296,10 @@ clockOutBtn.addEventListener("click", async function () {
     updateAttendanceStatus();
 
 });
+
+// CLOSE CLOCK OUT CONDITION
+}
+
 // INITIALIZE
 updateAttendanceStatus();
 displayAttendanceHistory();
