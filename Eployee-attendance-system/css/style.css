@@ -1,0 +1,368 @@
+/* GENERAL PAGE STYLING */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f4f9;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* LOGIN CONTAINER */
+
+.login-container {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* LOGIN BOX */
+
+.login-box {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+}
+
+
+/* HEADING */
+
+.login-box h1 {
+    text-align: center;
+    color: #172b4d;
+    margin-bottom: 12px;
+    font-size: 28px;
+}
+
+.login-box > p {
+    text-align: center;
+    color: #718096;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+
+/* FORM ELEMENTS */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 7px;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+}
+
+
+/* SIGN IN BUTTON */
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: #172b4d;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+
+/* FOOTER */
+
+.login-footer {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #98a2b3;
+}button {
+    background-color: red !important;
+    color: white !important;
+}
+
+/* DASHBOARD STYLING */
+
+.dashboard-container {
+width: 90%;
+max-width: 1100px;
+margin: 40px auto;
+}
+
+.dashboard-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: #172b4d;
+color: white;
+padding: 20px 30px;
+border-radius: 10px;
+}
+
+.dashboard-header h1 {
+margin: 0;
+font-size: 24px;
+}
+
+.dashboard-content {
+margin-top: 25px;
+}
+
+.welcome-section {
+margin-bottom: 25px;
+}
+
+.welcome-section h2 {
+color: #172b4d;
+}
+
+.time-card,
+.attendance-card,
+.hours-card {
+background: white;
+padding: 25px;
+margin-bottom: 20px;
+border-radius: 10px;
+box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.time-card h2,
+.attendance-card h2,
+.hours-card h2 {
+color: #172b4d;
+}
+
+.attendance-buttons {
+display: flex;
+gap: 15px;
+margin-top: 20px;
+}
+
+.attendance-buttons button {
+width: 150px;
+}
+
+#clockInBtn {
+    background: #198754 !important;
+    color: white !important;
+}
+
+#clockOutBtn {
+background: #dc3545;
+color: white;
+}
+
+.history-link {
+margin-top: 25px;
+}
+
+.history-link a {
+color: #172b4d;
+font-weight: bold;
+text-decoration: none;
+}
+/* DATE AND TIME CARD */
+.time-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+    text-align: center;
+}
+
+.time-card h3 {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.time-card h2 {
+    color: #172b4d;
+    font-size: 36px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.time-card p {
+    color: #64748b;
+    font-size: 14px;
+}
+/* EMPLOYEE PROFILE CARD */
+
+.profile-card {
+background: #ffffff;
+padding: 25px;
+border-radius: 12px;
+margin-bottom: 25px;
+box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.profile-header {
+display: flex;
+align-items: center;
+gap: 18px;
+margin-bottom: 25px;
+padding-bottom: 20px;
+border-bottom: 1px solid #eeeeee;
+}
+
+.profile-avatar {
+width: 85px;
+height: 85px;
+border-radius: 50%;
+overflow: hidden;
+background: #e8edf5;
+flex-shrink: 0;
+}
+
+.profile-avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.profile-heading h2 {
+margin: 0 0 7px;
+color: #172b4d;
+font-size: 22px;
+}
+
+.profile-heading p {
+margin: 0;
+color: #777777;
+font-size: 14px;
+}
+
+.profile-details {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 20px;
+}
+
+.profile-item {
+display: flex;
+flex-direction: column;
+gap: 7px;
+}
+
+.profile-item span {
+font-size: 13px;
+color: #777777;
+}
+
+.profile-item strong {
+font-size: 15px;
+color: #172b4d;
+overflow-wrap: anywhere;
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 600px) {
+
+.profile-card {
+    padding: 18px;
+}
+.profile-details {
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+}
+.profile-heading h2 {
+    font-size: 18px;
+}
+
+}
+
+/* PROFILE PHOTO UPLOAD */
+
+.photo-upload {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.photo-upload label {
+    display: inline-block;
+    background: #172b4d;
+    color: white;
+    padding: 9px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.photo-upload label:hover {
+    background: #2563eb;
+}
+
+.photo-upload input {
+    display: none;
+}
+/* PROFILE IMAGE IMPROVEMENTS */
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #e8edf5;
+    background: #e8edf5;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* EMPLOYEE ATTENDANCE STATUS */
+
+#employeeAttendanceStatus {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+#employeeAttendanceStatus.clocked-in {
+    color: #198754;
+}
+
+#employeeAttendanceStatus.clocked-out {
+    color: #dc3545;
+}
