@@ -853,3 +853,18 @@ if (loginForm) {
     });
 
 }
+// PROTECT EMPLOYEE DASHBOARD
+
+if (window.location.pathname.endsWith("dashboard.html")) {
+
+    (async function () {
+
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error || !data.session) {
+            window.location.replace("index.html");
+        }
+
+    })();
+
+}
