@@ -296,6 +296,7 @@ if (clockOutBtn) {
     updateAttendanceStatus();
 
 });
+}
 // INITIALIZE
 updateAttendanceStatus();
 displayAttendanceHistory();
