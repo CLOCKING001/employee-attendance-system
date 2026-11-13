@@ -649,48 +649,69 @@ function displayEmployees() {
 if (employeeDirectory) {
 
 employeeDirectory.addEventListener("click", function(event) {
-
+    const button = event.target;
+    const action = button.dataset.action;
+    const index = Number(button.dataset.index);
+    if (!action || !employees[index]) {
+        return;
+    }
+    const employee = employees[index];
+    // EDIT EMPLOYEE
+    if (action === "edit") {
+        const newName = prompt("Enter employee full name:", employee.fullName);
+        if (newName === null) return;
+        const newID = prompt("Enter employee ID:", employee.employeeID);
+        if (newID === null) return;
+        const newDepartment = prompt("Enter department:", employee.department);
+        if (newDepartment === null) return;
+        const newPosition = prompt("Enter job position:", employee.position);
+        if (newPosition === null) return;
+        const newEmail = prompt("Enter email address:", employee.email);
+        if (newEmail === null) return;
+        if (
+            !newName.trim() ||
+            !newID.trim() ||
+            !newDepartment.trim() ||
+            !newPosition.trim() ||
+            !newEmail.trim()
+        ) {
+            alert("All employee fields are required.");
+            return;
+        }
+        const duplicateID = employees.some(function(item, i) {
+            return i !== index &&
+                item.employeeID.toLowerCase() === newID.trim().toLowerCase();
+        });
         if (duplicateID) {
             alert("This Employee ID already exists.");
             return;
         }
-
         const duplicateEmail = employees.some(function(item, i) {
             return i !== index &&
                 item.email.toLowerCase() === newEmail.trim().toLowerCase();
         });
-
         if (duplicateEmail) {
             alert("This email address is already registered.");
             return;
         }
-
         employee.fullName = newName.trim();
         employee.employeeID = newID.trim();
         employee.department = newDepartment.trim();
         employee.position = newPosition.trim();
         employee.email = newEmail.trim();
-
         localStorage.setItem("employees", JSON.stringify(employees));
-
         displayEmployees();
         loadAttendanceEmployeeFilter();
-
-alert("Employee information updated successfully!");
-
-} else if (action === "toggle") {
-
-    employee.status =
-        employee.status === "Inactive" ? "Active" : "Inactive";
-
-    localStorage.setItem("employees", JSON.stringify(employees));
-
-    displayEmployees();
-    loadAttendanceEmployeeFilter();
-
-}
-
+        alert("Employee information updated successfully!");
+    } else if (action === "toggle") {
+        employee.status =
+            employee.status === "Inactive" ? "Active" : "Inactive";
+        localStorage.setItem("employees", JSON.stringify(employees));
+        displayEmployees();
+        loadAttendanceEmployeeFilter();
+    }
 });
+
 }
         // ADMIN ATTENDANCE MONITORING
 
