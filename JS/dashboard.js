@@ -218,7 +218,8 @@ if (clockInBtn) {
 
 // CLOCK OUT - UPDATE SUPABASE
 
-clockOutBtn.addEventListener("click", async function () {
+if (clockOutBtn) {
+    clockOutBtn.addEventListener("click", async function () {
 
     if (!clockInTime) {
         alert("You must clock in first.");
