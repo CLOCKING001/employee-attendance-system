@@ -568,13 +568,14 @@ const employeeDirectory = document.getElementById("employeeDirectory");
 
 // OPEN REGISTRATION FORM
 
-addEmployeeBtn.addEventListener("click", function() {
+if (addEmployeeBtn && addEmployeeForm) {
 
+addEmployeeBtn.addEventListener("click", function() {
     addEmployeeForm.style.display =
         addEmployeeForm.style.display === "none" ? "block" : "none";
-
 });
 
+}
 // DISPLAY REGISTERED EMPLOYEES
 
 function displayEmployees() {
