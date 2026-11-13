@@ -214,6 +214,7 @@ if (clockInBtn) {
     alert("Clock-in successful! Your attendance has been saved.");
 
 });
+}
 
 // CLOCK OUT - UPDATE SUPABASE
 
