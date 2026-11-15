@@ -100,64 +100,68 @@ function verifyOfficeLocation() {
 
     return new Promise((resolve) => {
 
-        if (!navigator.geolocation) {
-            alert("GPS is not supported by this browser.");
-            resolve(false);
-            return;
-        }
+    if (!navigator.geolocation) {
+        alert("GPS is not supported by this browser.");
+        resolve(null);
+        return;
+    }
 
-        navigator.geolocation.getCurrentPosition(
+    navigator.geolocation.getCurrentPosition(
 
-            function(position) {
+        function(position) {
 
-                const employeeLatitude = position.coords.latitude;
-                const employeeLongitude = position.coords.longitude;
-                console.log("Your Latitude:", employeeLatitude);
-console.log("Your Longitude:", employeeLongitude);
-console.log("GPS Accuracy:", position.coords.accuracy, "metres");
+            const employeeLatitude = position.coords.latitude;
+            const employeeLongitude = position.coords.longitude;
 
-                const distance = calculateDistance(
-                    OFFICE_LATITUDE,
-                    OFFICE_LONGITUDE,
-                    employeeLatitude,
-                    employeeLongitude
+            const distance = calculateDistance(
+                OFFICE_LATITUDE,
+                OFFICE_LONGITUDE,
+                employeeLatitude,
+                employeeLongitude
+            );
+
+            console.log("Your Latitude:", employeeLatitude);
+            console.log("Your Longitude:", employeeLongitude);
+            console.log("Distance from office:", distance);
+
+            if (distance <= ALLOWED_RADIUS) {
+
+                alert("Location verified. Attendance permitted.");
+
+                resolve({
+                    latitude: employeeLatitude,
+                    longitude: employeeLongitude
+                });
+
+            } else {
+
+                alert(
+                    "Attendance denied!\nYou are approximately " +
+                    Math.round(distance) +
+                    " metres away from the office."
                 );
 
-                if (distance <= ALLOWED_RADIUS) {
-
-                    alert("Location verified. Attendance permitted.");
-                    resolve(true);
-
-                } else {
-
-                    alert(
-                        "Attendance denied!\nYou are approximately " +
-                        Math.round(distance) +
-                        " metres away from the office."
-                    );
-
-                    resolve(false);
-                }
-            },
-
-            function(error) {
-
-                alert("Unable to verify your location. Please enable GPS and allow location access.");
-
-                resolve(false);
-
-            },
-
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
+                resolve(null);
             }
+        },
 
-        );
+        function(error) {
 
-    });
+            alert("Unable to verify your location. Please enable GPS and allow location access.");
 
+            resolve(null);
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+
+    );
+
+});
 }
 
 
