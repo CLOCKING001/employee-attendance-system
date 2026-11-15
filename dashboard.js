@@ -305,8 +305,10 @@ clockOutBtn.addEventListener("click", async function () {
 
 });
 
-// INITIALIZE
-updateAttendanceStatus();
+// INITIALIZE ATTENDANCE
+
+loadActiveAttendance();
+
 displayAttendanceHistory();
 // ATTENDANCE HISTORY
 
