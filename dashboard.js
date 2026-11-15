@@ -56,6 +56,42 @@ async function checkEmployeeSession() {
 
     return true;
 }
+// LOAD EMPLOYEE’S ACTIVE ATTENDANCE
+
+async function loadActiveAttendance() {
+    const isAuthenticated = await checkEmployeeSession();
+
+if (!isAuthenticated) return;
+
+const { data, error } = await supabaseClient
+    .from("attendance")
+    .select("*")
+    .eq("user_id", currentEmployee.id)
+    .is("clock_out", null)
+    .order("attendance_date", { ascending: false })
+    .limit(1);
+
+if (error) {
+    console.error("Attendance loading error:", error);
+    alert("Unable to retrieve your attendance status.");
+    return;
+}
+
+if (data && data.length > 0) {
+
+    currentAttendance = data[0];
+
+    clockInTime = currentAttendance.clock_in;
+
+} else {
+
+    currentAttendance = null;
+    clockInTime = null;
+
+}
+
+updateAttendanceStatus();
+updateProfileAttendanceStatus();
 
 function updateAttendanceStatus() {
     if (clockInTime) {
