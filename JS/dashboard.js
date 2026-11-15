@@ -211,8 +211,8 @@ clockInBtn.addEventListener("click", async function () {
     }
 
     // Update local dashboard display
-    window.clockInTime = clockInTime;
-    localStorage.setItem("clockInTime", clockInTime);
+   clockInTime = newClockInTime;
+localStorage.setItem("clockInTime", newClockInTime);
     localStorage.setItem("attendanceRecordId", data.id);
 
     updateAttendanceStatus();
