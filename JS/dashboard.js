@@ -184,8 +184,7 @@ clockInBtn.addEventListener("click", async function () {
     }
 
     const now = new Date();
-    const clockInTime = now.toISOString();
-
+   const newClockInTime = now.toISOString();
     // Get today's local date
     const attendanceDate =
         now.getFullYear() + "-" +
