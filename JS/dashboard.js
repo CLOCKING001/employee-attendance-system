@@ -1,15 +1,23 @@
-// SUPABASE CONNECTION
-
 const SUPABASE_URL = "https://bqiqqagwmultojblbisj.supabase.co";
-
 const SUPABASE_KEY = "sb_publishable_NIVEtutArzz7fh95viwTfg_Es4nzhy4";
-
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-// VERIFIED EMPLOYEE LOCATION
-let verifiedLocation = null;
+// CHECK EMPLOYEE AUTHENTICATION
+
+async function checkEmployeeSession() {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    console.log("Authenticated employee:", data.session.user.id);
+}
+
+checkEmployeeSession();
 // LIVE DATE AND TIME
 function updateDateTime() {
     const now = new Date();
@@ -48,7 +56,6 @@ const attendanceStatus = document.getElementById("attendanceStatus");
 let clockInTime = localStorage.getItem("clockInTime");
 
 function updateAttendanceStatus() {
-    if (!clockInBtn || !clockOutBtn) return;
     if (clockInTime) {
         clockInBtn.disabled = true;
         clockOutBtn.disabled = false;
@@ -105,10 +112,6 @@ function verifyOfficeLocation() {
 
                 const employeeLatitude = position.coords.latitude;
                 const employeeLongitude = position.coords.longitude;
-                verifiedLocation = {
-    latitude: employeeLatitude,
-    longitude: employeeLongitude
-};
                 console.log("Your Latitude:", employeeLatitude);
 console.log("Your Longitude:", employeeLongitude);
 console.log("GPS Accuracy:", position.coords.accuracy, "metres");
@@ -158,146 +161,53 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 }
 
 
-// CLOCK IN - SAVE TO SUPABASE
+// CLOCK IN
 
-   if (clockInBtn) {
-    clockInBtn.addEventListener("click", async function () {
+clockInBtn.addEventListener("click", function () {
 
-    const isVerified = await verifyOfficeLocation();
+    verifyOfficeLocation().then((isVerified) => {
 
-    if (!isVerified) return;
+        if (!isVerified) return;
 
-    if (!verifiedLocation) {
-        alert("Unable to retrieve verified location.");
-        return;
-    }
+        clockInTime = new Date().toISOString();
 
-    const { data: userData, error: userError } =
-        await supabaseClient.auth.getUser();
+        localStorage.setItem("clockInTime", clockInTime);
 
-    if (userError || !userData.user) {
-        alert("Please sign in again.");
-        window.location.href = "index.html";
-        return;
-    }
+        updateAttendanceStatus();
 
-    const now = new Date();
+        alert("Clock-in successful!");
 
-    const attendanceDate =
-        now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, "0") + "-" +
-        String(now.getDate()).padStart(2, "0");
-
-    const { data, error } = await supabaseClient
-        .from("attendance")
-        .insert({
-            user_id: userData.user.id,
-            clock_in: now.toISOString(),
-            clock_in_latitude: verifiedLocation.latitude,
-            clock_in_longitude: verifiedLocation.longitude,
-            attendance_date: attendanceDate
-        })
-        .select()
-        .single();
-
-    if (error) {
-        alert("Clock-in failed: " + error.message);
-        return;
-    }
-
-    clockInTime = now.toISOString();
-
-    localStorage.setItem("clockInTime", clockInTime);
-    localStorage.setItem("attendanceRecordId", data.id);
-
-    updateAttendanceStatus();
-
-    alert("Clock-in successful! Your attendance has been saved.");
+    });
 
 });
-}
 
-// CLOCK OUT - UPDATE SUPABASE
+// CLOCK OUT
 
-if (clockOutBtn) {
-    clockOutBtn.addEventListener("click", async function () {
+clockOutBtn.addEventListener("click", function () {
 
-    if (!clockInTime) {
-        alert("You must clock in first.");
-        return;
-    }
-
-    const isVerified = await verifyOfficeLocation();
-
+if (!clockInTime) return;
+verifyOfficeLocation().then((isVerified) => {
     if (!isVerified) return;
-
-    if (!verifiedLocation) {
-        alert("Unable to retrieve verified location.");
-        return;
-    }
-
-    const recordId = localStorage.getItem("attendanceRecordId");
-
-    if (!recordId) {
-        alert("Attendance record not found. Please contact your administrator.");
-        return;
-    }
-
-    const now = new Date();
+    const clockOutTime = new Date();
     const savedClockIn = new Date(clockInTime);
-    const duration = now - savedClockIn;
-
+    saveAttendanceHistory(savedClockIn, clockOutTime);
+    localStorage.setItem("clockOutTime", clockOutTime.toISOString());
+    const duration = clockOutTime - savedClockIn;
     const hours = Math.floor(duration / 3600000);
     const minutes = Math.floor((duration % 3600000) / 60000);
-
-    const totalHours = duration / 3600000;
-
-    const { data: userData, error: userError } =
-        await supabaseClient.auth.getUser();
-
-    if (userError || !userData.user) {
-        alert("Please sign in again.");
-        window.location.href = "index.html";
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from("attendance")
-        .update({
-            clock_out: now.toISOString(),
-            clock_out_latitude: verifiedLocation.latitude,
-            clock_out_longitude: verifiedLocation.longitude,
-            total_hours: totalHours
-        })
-        .eq("id", recordId)
-        .eq("user_id", userData.user.id);
-
-    if (error) {
-        alert("Clock-out failed: " + error.message);
-        return;
-    }
-
-    saveAttendanceHistory(savedClockIn, now);
-
-    localStorage.setItem("clockOutTime", now.toISOString());
-
     alert(
         "Clock-out successful!\nTotal time: " +
         hours + " hours " + minutes + " minutes"
     );
-
     document.getElementById("totalWorkTime").textContent =
         hours + " hours " + minutes + " minutes";
-
     localStorage.removeItem("clockInTime");
-    localStorage.removeItem("attendanceRecordId");
-
     clockInTime = null;
-
     updateAttendanceStatus();
+});
 
 });
-}
+
 // INITIALIZE
 updateAttendanceStatus();
 displayAttendanceHistory();
@@ -398,21 +308,16 @@ let employeeProfile = JSON.parse(
 
 function updateEmployeeProfile() {
 
-    const name = document.getElementById("employeeName");
-    const id = document.getElementById("employeeID");
-    const department = document.getElementById("employeeDepartment");
-    const position = document.getElementById("employeePosition");
-    const email = document.getElementById("employeeEmail");
-
-    if (name) name.textContent = employeeProfile.fullName;
-
-    if (id) id.textContent = employeeProfile.employeeID;
-
-    if (department) department.textContent = employeeProfile.department;
-
-    if (position) position.textContent = employeeProfile.position;
-
-    if (email) email.textContent = employeeProfile.email;
+document.getElementById("employeeName").textContent =
+    employeeProfile.fullName;
+document.getElementById("employeeID").textContent =
+    employeeProfile.employeeID;
+document.getElementById("employeeDepartment").textContent =
+    employeeProfile.department;
+document.getElementById("employeePosition").textContent =
+    employeeProfile.position;
+document.getElementById("employeeEmail").textContent =
+    employeeProfile.email;
 
 }
 
@@ -921,55 +826,3 @@ newEmployeeForm.addEventListener("submit", function(event) {
 // INITIALIZE EMPLOYEE DIRECTORY
 
 displayEmployees();
-// SUPABASE EMPLOYEE LOGIN
-
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-
-    loginForm.addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-        const email = document.getElementById("email").value.trim();
-
-        const password = document.getElementById("password").value;
-
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-        });
-
-        if (error) {
-
-            alert("Login failed: " + error.message);
-
-            return;
-
-        }
-
-        alert("Login successful! Welcome.");
-
-        window.location.href = "dashboard.html";
-
-    });
-
-}
-// PROTECT EMPLOYEE DASHBOARD
-
-if (window.location.pathname.endsWith("dashboard.html")) {
-
-    (async function () {
-
-        const { data, error } = await supabaseClient.auth.getSession();
-
-        if (error || !data.session) {
-            window.location.replace("index.html");
-        }
-
-    })();
-
-}
