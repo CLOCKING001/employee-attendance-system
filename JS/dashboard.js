@@ -222,28 +222,79 @@ localStorage.setItem("clockInTime", newClockInTime);
 });
 // CLOCK OUT
 
-clockOutBtn.addEventListener("click", function () {
+clockOutBtn.addEventListener("click", async function () {
 
-if (!clockInTime) return;
-verifyOfficeLocation().then((isVerified) => {
-    if (!isVerified) return;
+    if (!clockInTime) {
+        alert("You must clock in before clocking out.");
+        return;
+    }
+
+    const location = await verifyOfficeLocation();
+
+    if (!location) return;
+
+    // Get authenticated employee
+    const { data: { user }, error: userError } =
+        await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+        alert("Your session has expired. Please log in again.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    const recordId = localStorage.getItem("attendanceRecordId");
+
+    if (!recordId) {
+        alert("Attendance record not found. Please contact your administrator.");
+        return;
+    }
+
     const clockOutTime = new Date();
     const savedClockIn = new Date(clockInTime);
-    saveAttendanceHistory(savedClockIn, clockOutTime);
-    localStorage.setItem("clockOutTime", clockOutTime.toISOString());
+
     const duration = clockOutTime - savedClockIn;
+
+    const totalHours = Number(
+        (duration / 3600000).toFixed(2)
+    );
+
+    // Update attendance record in Supabase
+    const { error } = await supabaseClient
+        .from("attendance")
+        .update({
+            clock_out: clockOutTime.toISOString(),
+            clock_out_latitude: location.latitude,
+            clock_out_longitude: location.longitude,
+            total_hours: totalHours
+        })
+        .eq("id", recordId)
+        .eq("user_id", user.id);
+
+    if (error) {
+        console.error("Clock-out error:", error);
+        alert("Clock-out failed: " + error.message);
+        return;
+    }
+
+    // Save local attendance history for dashboard display
+    saveAttendanceHistory(savedClockIn, clockOutTime);
+
     const hours = Math.floor(duration / 3600000);
     const minutes = Math.floor((duration % 3600000) / 60000);
-    alert(
-        "Clock-out successful!\nTotal time: " +
-        hours + " hours " + minutes + " minutes"
-    );
+
     document.getElementById("totalWorkTime").textContent =
         hours + " hours " + minutes + " minutes";
+
+    alert("Clock-out successful! Attendance saved to database.");
+
     localStorage.removeItem("clockInTime");
+    localStorage.removeItem("attendanceRecordId");
+
     clockInTime = null;
+
     updateAttendanceStatus();
-});
+    updateProfileAttendanceStatus();
 
 });
 
