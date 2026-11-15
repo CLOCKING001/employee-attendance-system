@@ -32,8 +32,30 @@ const clockInBtn = document.getElementById("clockInBtn");
 const clockOutBtn = document.getElementById("clockOutBtn");
 const attendanceStatus = document.getElementById("attendanceStatus");
 
-// Retrieve saved attendance
-let clockInTime = localStorage.getItem("clockInTime");
+// EMPLOYEE AUTHENTICATION
+
+let clockInTime = null;
+let currentEmployee = null;
+let currentAttendance = null;
+
+async function checkEmployeeSession() {
+
+    const { data: { user }, error } =
+        await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+
+        alert("Your session has expired. Please log in again.");
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+    currentEmployee = user;
+
+    return true;
+}
 
 function updateAttendanceStatus() {
     if (clockInTime) {
