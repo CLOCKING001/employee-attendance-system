@@ -196,7 +196,7 @@ clockInBtn.addEventListener("click", async function () {
         .from("attendance")
         .insert({
             user_id: user.id,
-            clock_in: clockInTime,
+            clock_in: newClockInTime,
             clock_in_latitude: location.latitude,
             clock_in_longitude: location.longitude,
             attendance_date: attendanceDate
