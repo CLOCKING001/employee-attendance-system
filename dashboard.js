@@ -234,19 +234,44 @@ function saveAttendanceHistory(clockIn, clockOut) {
 }
 
 
-// DISPLAY ATTENDANCE HISTORY
+// DISPLAY ATTENDANCE HISTORY FROM SUPABASE
 
-function displayAttendanceHistory() {
+async function displayAttendanceHistory() {
 
     const historyBody = document.getElementById("attendanceHistory");
 
     if (!historyBody) return;
 
-    const history = JSON.parse(
-        localStorage.getItem("attendanceHistory")
-    ) || [];
+    historyBody.innerHTML =
+        '<tr><td colspan="4">Loading attendance records...</td></tr>';
 
-    if (history.length === 0) {
+    // Get logged-in employee
+    const { data: { user }, error: userError } =
+        await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+        historyBody.innerHTML =
+            '<tr><td colspan="4">Please log in to view attendance.</td></tr>';
+        return;
+    }
+
+    // Retrieve this employee's attendance records
+    const { data: history, error } = await supabaseClient
+        .from("attendance")
+        .select("attendance_date, clock_in, clock_out, total_hours")
+        .eq("user_id", user.id)
+        .order("attendance_date", { ascending: false });
+
+    if (error) {
+        console.error("Attendance history error:", error);
+
+        historyBody.innerHTML =
+            '<tr><td colspan="4">Unable to load attendance records.</td></tr>';
+
+        return;
+    }
+
+    if (!history || history.length === 0) {
         historyBody.innerHTML =
             '<tr><td colspan="4">No attendance records yet.</td></tr>';
         return;
@@ -258,18 +283,35 @@ function displayAttendanceHistory() {
 
         const row = document.createElement("tr");
 
-        row.innerHTML = `
-            <td>${record.date}</td>
-            <td>${record.clockIn}</td>
-            <td>${record.clockOut}</td>
-            <td>${record.totalHours}</td>
-        `;
+        const clockIn = record.clock_in
+            ? new Date(record.clock_in).toLocaleTimeString()
+            : "-";
+
+        const clockOut = record.clock_out
+            ? new Date(record.clock_out).toLocaleTimeString()
+            : "In progress";
+
+        const totalHours = record.total_hours !== null
+            ? record.total_hours + " hours"
+            : "-";
+
+        const values = [
+            record.attendance_date,
+            clockIn,
+            clockOut,
+            totalHours
+        ];
+
+        values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
 
         historyBody.appendChild(row);
 
     });
 }
-
 displayAttendanceHistory();
 
 // EMPLOYEE PROFILE INFORMATION
