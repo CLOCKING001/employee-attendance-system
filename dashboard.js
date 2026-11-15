@@ -199,24 +199,55 @@ console.log("GPS Accuracy:", position.coords.accuracy, "metres");
 }
 
 
-// CLOCK IN
+// CLOCK IN - SUPABASE
 
-clockInBtn.addEventListener("click", function () {
+clockInBtn.addEventListener("click", async function () {
 
-    verifyOfficeLocation().then((isVerified) => {
+    if (currentAttendance) {
+        alert("You have already clocked in.");
+        return;
+    }
 
-        if (!isVerified) return;
+    const isVerified = await verifyOfficeLocation();
 
-        clockInTime = new Date().toISOString();
+    if (!isVerified) return;
 
-        localStorage.setItem("clockInTime", clockInTime);
+    const isAuthenticated = await checkEmployeeSession();
 
-        updateAttendanceStatus();
+    if (!isAuthenticated) return;
 
-        alert("Clock-in successful!");
+    const now = new Date();
 
-    });
+    const attendanceDate =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0");
 
+    const { data, error } = await supabaseClient
+        .from("attendance")
+        .insert({
+            user_id: currentEmployee.id,
+            attendance_date: attendanceDate,
+            clock_in: now.toISOString()
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Clock-in error:", error);
+        alert("Clock-in failed: " + error.message);
+        return;
+    }
+
+    currentAttendance = data;
+    clockInTime = data.clock_in;
+
+    updateAttendanceStatus();
+    updateProfileAttendanceStatus();
+
+    alert("Clock-in successful! Your attendance has been saved.");
+
+});
 });
 
 // CLOCK OUT
