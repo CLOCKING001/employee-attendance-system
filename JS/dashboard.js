@@ -167,24 +167,60 @@ function verifyOfficeLocation() {
 
 // CLOCK IN
 
-clockInBtn.addEventListener("click", function () {
+clockInBtn.addEventListener("click", async function () {
 
-    verifyOfficeLocation().then((isVerified) => {
+    const location = await verifyOfficeLocation();
 
-        if (!isVerified) return;
+    if (!location) return;
 
-        clockInTime = new Date().toISOString();
+    // Get the authenticated employee
+    const { data: { user }, error: userError } =
+        await supabaseClient.auth.getUser();
 
-        localStorage.setItem("clockInTime", clockInTime);
+    if (userError || !user) {
+        alert("Your session has expired. Please log in again.");
+        window.location.href = "index.html";
+        return;
+    }
 
-        updateAttendanceStatus();
+    const now = new Date();
+    const clockInTime = now.toISOString();
 
-        alert("Clock-in successful!");
+    // Get today's local date
+    const attendanceDate =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0");
 
-    });
+    // Save attendance to Supabase
+    const { data, error } = await supabaseClient
+        .from("attendance")
+        .insert({
+            user_id: user.id,
+            clock_in: clockInTime,
+            clock_in_latitude: location.latitude,
+            clock_in_longitude: location.longitude,
+            attendance_date: attendanceDate
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Attendance error:", error);
+        alert("Clock-in failed: " + error.message);
+        return;
+    }
+
+    // Update local dashboard display
+    window.clockInTime = clockInTime;
+    localStorage.setItem("clockInTime", clockInTime);
+    localStorage.setItem("attendanceRecordId", data.id);
+
+    updateAttendanceStatus();
+
+    alert("Clock-in successful! Attendance saved.");
 
 });
-
 // CLOCK OUT
 
 clockOutBtn.addEventListener("click", function () {
