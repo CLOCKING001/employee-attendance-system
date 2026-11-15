@@ -250,30 +250,58 @@ clockInBtn.addEventListener("click", async function () {
 });
 });
 
-// CLOCK OUT
+// CLOCK OUT - SUPABASE
 
-clockOutBtn.addEventListener("click", function () {
+clockOutBtn.addEventListener("click", async function () {
 
-if (!clockInTime) return;
-verifyOfficeLocation().then((isVerified) => {
+    if (!currentAttendance || !clockInTime) {
+        alert("You have not clocked in.");
+        return;
+    }
+
+    const isVerified = await verifyOfficeLocation();
+
     if (!isVerified) return;
+
     const clockOutTime = new Date();
+
     const savedClockIn = new Date(clockInTime);
-    saveAttendanceHistory(savedClockIn, clockOutTime);
-    localStorage.setItem("clockOutTime", clockOutTime.toISOString());
+
     const duration = clockOutTime - savedClockIn;
-    const hours = Math.floor(duration / 3600000);
-    const minutes = Math.floor((duration % 3600000) / 60000);
-    alert(
-        "Clock-out successful!\nTotal time: " +
-        hours + " hours " + minutes + " minutes"
+
+    const totalHours = Number(
+        (duration / 3600000).toFixed(2)
     );
-    document.getElementById("totalWorkTime").textContent =
-        hours + " hours " + minutes + " minutes";
-    localStorage.removeItem("clockInTime");
+
+    const { data, error } = await supabaseClient
+        .from("attendance")
+        .update({
+            clock_out: clockOutTime.toISOString(),
+            total_hours: totalHours
+        })
+        .eq("id", currentAttendance.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Clock-out error:", error);
+        alert("Clock-out failed: " + error.message);
+        return;
+    }
+
+    currentAttendance = null;
     clockInTime = null;
+
     updateAttendanceStatus();
-});
+    updateProfileAttendanceStatus();
+
+    document.getElementById("totalWorkTime").textContent =
+        Math.floor(duration / 3600000) + " hours " +
+        Math.floor((duration % 3600000) / 60000) + " minutes";
+
+    await displayAttendanceHistory();
+
+    alert("Clock-out successful! Attendance saved to Supabase.");
 
 });
 
