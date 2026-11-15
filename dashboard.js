@@ -891,9 +891,9 @@ viewAttendanceBtn.addEventListener("click", function() {
 loadAttendanceEmployeeFilter();
 displayAdminAttendance();
 
-// REGISTER NEW EMPLOYEE
+// REGISTER NEW EMPLOYEE - SUPABASE
 
-newEmployeeForm.addEventListener("submit", function(event) {
+newEmployeeForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
@@ -911,41 +911,50 @@ newEmployeeForm.addEventListener("submit", function(event) {
 
     };
 
-    // CHECK FOR DUPLICATE EMPLOYEE ID
-
-    const duplicateID = employees.some(function(employee) {
-
-        return employee.employeeID.toLowerCase() ===
-            newEmployee.employeeID.toLowerCase();
-
-    });
-
-    if (duplicateID) {
-
-        alert("This Employee ID already exists.");
-
+    if (
+        !newEmployee.fullName ||
+        !newEmployee.employeeID ||
+        !newEmployee.department ||
+        !newEmployee.position ||
+        !newEmployee.email
+    ) {
+        alert("Please complete all employee details.");
         return;
-
     }
 
-    // CHECK FOR DUPLICATE EMAIL
+    // CHECK CURRENT LOGIN SESSION
 
-    const duplicateEmail = employees.some(function(employee) {
+    const { data: { session }, error: sessionError } =
+        await supabaseClient.auth.getSession();
 
-        return employee.email.toLowerCase() ===
-            newEmployee.email.toLowerCase();
-
-    });
-
-    if (duplicateEmail) {
-
-        alert("This email address is already registered.");
-
+    if (sessionError || !session) {
+        alert("Your session has expired. Please log in again.");
         return;
-
     }
 
-    // SAVE EMPLOYEE
+    // CALL SUPABASE EDGE FUNCTION
+
+    const { data, error } = await supabaseClient.functions.invoke(
+        "create-employee",
+        {
+            body: newEmployee
+        }
+    );
+
+    if (error) {
+        console.error("Employee registration error:", error);
+        alert("Registration failed: " + error.message);
+        return;
+    }
+
+    if (!data || !data.success) {
+        alert(data?.error || "Unable to register employee.");
+        return;
+    }
+
+    // UPDATE LOCAL DIRECTORY DISPLAY
+
+    newEmployee.status = "Active";
 
     employees.push(newEmployee);
 
@@ -956,14 +965,12 @@ newEmployeeForm.addEventListener("submit", function(event) {
 
     displayEmployees();
 
+    loadAttendanceEmployeeFilter();
+
     newEmployeeForm.reset();
 
     addEmployeeForm.style.display = "none";
 
-    alert("Employee registered successfully!");
+    alert("Employee registered successfully! An invitation email has been sent.");
 
 });
-
-// INITIALIZE EMPLOYEE DIRECTORY
-
-displayEmployees();
